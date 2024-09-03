@@ -1,0 +1,149 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+
+Table users {
+  id integer [primary key]
+  email varchar
+  password varchar
+  first_name varchar
+  last_name varchar
+  role varchar
+  address integer
+  created_at timestamp
+}
+
+Table vendors {
+  id integer [primary key]
+  username varchar
+  email varchar
+  shop_name varchar
+  description varchar
+  logo_url varchar
+  created_at timestamp
+}
+
+Table category {
+  id integer [primary key]
+  name varchar
+  description varchar
+  parent_category integer
+  created_at timestamp
+}
+
+Table products {
+  id integer [primary key]
+  vendor integer
+  name varchar
+  description text [note: 'Content of the post']
+  category integer
+  original_price integer
+  discount_price integer
+  inventory integer
+  variation integer
+  rating integer
+  review integer
+  status varchar
+  created_at timestamp
+}
+
+Table variations {
+  id integer [primary key]
+  product integer
+  name varchar
+  value varchar
+  price_modifier decimal
+  inventory integer
+  created_at timestamp
+}
+
+Table orders {
+  id integer [primary key]
+  user integer
+  vendor integer
+  product integer
+  shipping_address integer
+  billing_address integer
+  payment_method varchar
+  order_status varchar
+  created_at timestamp
+}
+
+Table coupons {
+  id integer [primary key]
+  name varchar
+  discount_type varchar [note: 'percentage/fixed_amount']
+  discount_value varchar [note: 'percentage/fixed_amount']
+  start_date datetime
+  end_date_date datetime
+  minimum_order_value decimal [note: 'The minimum purchase amount required to use the coupon (optional).']
+  vendor integer
+  product integer
+  status boolean
+  created_at timestamp
+}
+
+Table events {
+  id integer [primary key]
+  vendor integer
+  name varchar
+  description varchar
+  category varchar
+  start_date datetime
+  end_date datetime
+  status varchar
+  tags varchar
+  original_price integer
+  discount_price integer
+  stock_quantity integer
+  images integer
+  sold_out boolean
+  created_at timestamp
+}
+
+Table images {
+  id integer [primary key]
+  category varchar [note: 'product_image/event_image/vendor_image']
+  url varchar
+  created_at timestamp
+}
+
+Table address {
+  id integer [primary key]
+  user integer
+  address_line1 varchar
+  created_at timestamp
+}
+Table reviews {
+  id integer [primary key]
+  user integer
+  product integer
+  rating integer
+  status varchar
+  created_at timestamp
+}
+
+// Ref: products.vendor_id > vendors.id // many-to-one
+Ref: vendors.id < products.vendor
+Ref: category.id < products.category
+Ref: variations.id < products.variation
+Ref: reviews.id < products.review
+
+Ref: products.id < variations.product
+
+Ref: users.id < orders.user
+Ref: vendors.id < orders.vendor
+Ref: products.id < orders.product
+Ref: address.id < orders.shipping_address
+Ref: address.id < orders.billing_address
+
+Ref: users.id < address.user
+
+Ref: users.id < reviews.user
+Ref: products.id < reviews.product
+
+Ref: vendors.id < coupons.vendor
+Ref: products.id < coupons.product
+
+Ref: events.images > images.id // many-to-one
+Ref: vendors.id < events.vendor
